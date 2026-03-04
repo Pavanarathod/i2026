@@ -5,6 +5,19 @@ type Ctx = { theme: Theme; setTheme: (t: Theme) => void };
 
 const ThemeContext = React.createContext<Ctx | null>(null);
 
+function animateThemeTransition() {
+  const root = document.documentElement;
+  root.classList.add("theme-switching");
+
+  window.clearTimeout(
+    (root as typeof root & { __themeTimer?: number }).__themeTimer,
+  );
+  (root as typeof root & { __themeTimer?: number }).__themeTimer =
+    window.setTimeout(() => {
+      root.classList.remove("theme-switching");
+    }, 100);
+}
+
 function applyTheme(theme: Theme) {
   const root = document.documentElement;
   const systemDark = window.matchMedia?.(
@@ -21,6 +34,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   });
 
   const setTheme = React.useCallback((t: Theme) => {
+    animateThemeTransition();
     localStorage.setItem("theme", t);
     setThemeState(t);
     applyTheme(t);

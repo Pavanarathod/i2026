@@ -16,9 +16,30 @@ import { useCheckUser, useSignin, useSignup } from "@/features/auth/auth.hooks";
 function digitsOnly(v: string) {
   return v.replace(/\D/g, "");
 }
-function isValidPhone(phone: string) {
-  return digitsOnly(phone).length === 10;
+
+function normalizeCountryCode(countryCode: string) {
+  const normalized = digitsOnly(countryCode);
+  return normalized || "91";
 }
+
+function getFullPhone(countryCode: string, phone: string) {
+  return `${normalizeCountryCode(countryCode)}${digitsOnly(phone)}`;
+}
+
+function isValidPhone(countryCode: string, phone: string) {
+  const normalizedPhone = digitsOnly(phone);
+  const normalizedCountryCode = normalizeCountryCode(countryCode);
+  const fullPhone = `${normalizedCountryCode}${normalizedPhone}`;
+
+  return (
+    normalizedCountryCode.length >= 1 &&
+    normalizedCountryCode.length <= 4 &&
+    normalizedPhone.length >= 7 &&
+    normalizedPhone.length <= 12 &&
+    fullPhone.length <= 15
+  );
+}
+
 function isValidOtp(otp: string) {
   return /^\d{4,6}$/.test(otp);
 }
@@ -36,6 +57,7 @@ export function OtpDialog() {
   const [flow, setFlow] = React.useState<"login" | "signup" | null>(null);
 
   const [step, setStep] = React.useState<"phone" | "otp">("phone");
+  const [countryCode, setCountryCode] = React.useState("+91");
   const [phone, setPhone] = React.useState("");
   const [otp, setOtp] = React.useState("");
   const [err, setErr] = React.useState<string | null>(null);
@@ -46,6 +68,7 @@ export function OtpDialog() {
   React.useEffect(() => {
     if (!isOpen) {
       setStep("phone");
+      setCountryCode("+91");
       setPhone("");
       setOtp("");
       setFlow(null);
@@ -74,14 +97,16 @@ export function OtpDialog() {
   async function onSendOtp() {
     setErr(null);
 
-    const normalizedPhone = digitsOnly(phone);
-    if (!isValidPhone(normalizedPhone)) {
-      return setErr("Enter a valid 10-digit phone number.");
+    const normalizedPhone = getFullPhone(countryCode, phone);
+    if (!isValidPhone(countryCode, phone)) {
+      return setErr("Enter a valid country code and phone number.");
     }
 
     try {
       // 1) Check user (backend decides login/signup)
-      const res = await checkUserMut.mutateAsync({ mobile: normalizedPhone });
+      const res = await checkUserMut.mutateAsync({
+        mobile: normalizedPhone,
+      });
       setFlow(res.data?.type);
 
       // 2) Now move to OTP step
@@ -99,7 +124,11 @@ export function OtpDialog() {
   async function onVerifyOtp() {
     setErr(null);
 
-    const normalizedPhone = digitsOnly(phone);
+    const normalizedPhone = getFullPhone(countryCode, phone);
+    if (!isValidPhone(countryCode, phone)) {
+      return setErr("Enter a valid country code and phone number.");
+    }
+
     if (!isValidOtp(otp)) {
       return setErr("Enter a valid OTP (4–6 digits).");
     }
@@ -111,7 +140,10 @@ export function OtpDialog() {
       }
 
       if (flow === "login") {
-        const res = await signinMut.mutateAsync({ mobile: normalizedPhone, otp });
+        const res = await signinMut.mutateAsync({
+          mobile: normalizedPhone,
+          otp,
+        });
         const sessionData = {
           token: res.token,
           user: {
@@ -125,7 +157,10 @@ export function OtpDialog() {
 
         setAuth(sessionData);
       } else {
-        const res = await signupMut.mutateAsync({ mobile: normalizedPhone, otp });
+        const res = await signupMut.mutateAsync({
+          mobile: normalizedPhone,
+          otp,
+        });
         const sessionData = {
           token: res.token,
           user: {
@@ -162,12 +197,19 @@ export function OtpDialog() {
         <div className="space-y-3">
           {step === "phone" ? (
             <>
-              <Input
-                placeholder="Phone number"
-                inputMode="numeric"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
+              <div className="grid grid-cols-[96px_1fr] gap-2">
+                <Input
+                  placeholder="+91"
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                />
+                <Input
+                  placeholder="Phone number"
+                  inputMode="numeric"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
 
               {err && <p className="text-sm text-destructive">{err}</p>}
 
@@ -176,7 +218,8 @@ export function OtpDialog() {
               </Button>
 
               <p className="text-xs text-muted-foreground">
-                We’ll verify if you’re an existing user, then ask OTP.
+                Enter country code and phone number. We’ll verify your account,
+                then ask for OTP.
               </p>
             </>
           ) : (
