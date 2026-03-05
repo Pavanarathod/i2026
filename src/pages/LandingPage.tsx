@@ -166,7 +166,7 @@ export default function LandingPage() {
               <img
                 src={activeLogo}
                 alt="ISHVI logo"
-                className="block h-full w-full object-cover"
+                className="block h-full w-full object-cover bg-transparent"
               />
             </div>
             <div className="leading-tight">
@@ -209,7 +209,11 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-2 md:hidden">
             {isLoggedIn ? (
-              <Button variant="ghost" className="px-3" onClick={() => navigate("/dashboard")}>
+              <Button
+                variant="ghost"
+                className="px-3"
+                onClick={() => navigate("/dashboard")}
+              >
                 Dashboard
               </Button>
             ) : (
@@ -235,7 +239,8 @@ export default function LandingPage() {
                 <SheetHeader className="border-b border-border/70 px-5 py-5 text-left">
                   <SheetTitle className="text-base">Explore ISHVI</SheetTitle>
                   <SheetDescription>
-                    Browse sections, switch theme, and continue with the best next action.
+                    Browse sections, switch theme, and continue with the best
+                    next action.
                   </SheetDescription>
                 </SheetHeader>
 
@@ -327,7 +332,9 @@ export default function LandingPage() {
               {/* Hero CTAs */}
               <motion.div variants={item} className="mt-6 flex flex-wrap gap-3">
                 <Button
-                  onClick={() => (isLoggedIn ? navigate("/dashboard") : openAuthModal())}
+                  onClick={() =>
+                    isLoggedIn ? navigate("/dashboard") : openAuthModal()
+                  }
                 >
                   {isLoggedIn ? "Go to Dashboard" : "Start Shortlisting"}
                   <Sparkles className="h-4 w-4" />
