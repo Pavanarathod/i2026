@@ -17,3 +17,13 @@ export type LandingContent = {
 };
 
 export type LandingContentResponse = ApiResponse<LandingContent>;
+
+export type AllPrograms = {
+  success: true;
+  data: {
+    data: {
+      related_programs: string;
+      count: number;
+    }[];
+  };
+};

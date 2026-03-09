@@ -7,5 +7,7 @@ export const endpoints = {
   },
   landing: {
     content: "/landing-page",
+    getProgramCount: "/getProgramCount",
+    getAllPrograms: "/getProgramCount",
   },
 } as const;

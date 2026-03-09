@@ -1,10 +1,12 @@
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle2, Menu, Moon, Search, Sparkles, Sun } from "lucide-react";
+import { CheckCircle2, Menu, Moon, Sparkles, Sun } from "lucide-react";
 import clsx from "clsx";
-import logoWhite from "@/assets/images/LogoWhite.svg";
-import logoDark from "@/assets/images/logoDark.jpeg";
+import logoWhite from "@/assets/images/logoWhite.png";
+import logoDark from "@/assets/images/logoDark.png";
+import logoWhiteMobile from "@/assets/images/logoMobileWhite.png";
+import logoDarkMobile from "@/assets/images/logoMobileDark.png";
 import { useTheme } from "@/app/providers/ThemeProvider";
 import {
   Sheet,
@@ -16,14 +18,8 @@ import {
 } from "@/components/ui/sheet";
 import { useAuthModalStore } from "@/features/auth/authModalStore";
 import { useAuthStore } from "@/features/auth/store";
-
-// ✅ If you want to keep your existing sections, import them here
-// import LandingPagePrograms from "@/components/LandingPage/Programs";
-// import LandingPageUniversities from "@/components/LandingPage/Universities";
-// import LandingPageCommunities from "@/components/LandingPage/Communities";
-// import WebinarsPage from "@/components/LandingPage/Webinars";
-// import LandingDiscussionPageContent from "@/components/LandingPage/Discussions";
-// import Admits from "@/components/LandingPage/Admits";
+import { useMediaQuery } from "@uidotdev/usehooks";
+import LandingPageRightSection from "@/features/landing/landingPageRightSection";
 
 const container = {
   hidden: { opacity: 0, y: 12 },
@@ -127,6 +123,7 @@ export default function LandingPage() {
   const { theme, setTheme } = useTheme();
   const openAuthModal = useAuthModalStore((s) => s.open);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
 
   // ✅ Update based on your store shape
   const token = useAuthStore((s: { token: string | null }) => s.token);
@@ -137,7 +134,6 @@ export default function LandingPage() {
     (theme === "system" &&
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const activeLogo = isDarkTheme ? logoDark : logoWhite;
 
   const onPrimaryCTA = () => {
     if (isLoggedIn) navigate("/dashboard");
@@ -159,35 +155,29 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Top Nav */}
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-380 items-center justify-between gap-3 px-4 py-3">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="flex h-16 w-36">
-              <img
-                src={activeLogo}
-                alt="ISHVI logo"
-                className="block h-full w-full object-cover bg-transparent"
-              />
-            </div>
-            <div className="leading-tight">
-              <div className="-mt-0.5 text-[11px] text-muted-foreground">
-                Study Abroad Platform
+          {isSmallDevice ? (
+            <Link to="/" className="flex items-center gap-3">
+              <div className="flex h-16 w-36">
+                <img
+                  src={isDarkTheme ? logoDarkMobile : logoWhiteMobile}
+                  alt="ISHVI logo"
+                  className="block h-12 w-16"
+                />
               </div>
-            </div>
-          </Link>
-
-          <nav className="hidden items-center gap-6 md:flex">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => scrollToSection(item.id)}
-                className="text-sm text-muted-foreground transition hover:text-primary"
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
+            </Link>
+          ) : (
+            <Link to="/" className="flex items-center gap-3">
+              <div className="flex h-16 w-36">
+                <img
+                  src={isDarkTheme ? logoDark : logoWhite}
+                  alt="ISHVI logo"
+                  className="block h-full w-full object-cover bg-transparent"
+                />
+              </div>
+            </Link>
+          )}
 
           <div className="hidden items-center gap-3 md:flex">
             <ThemeModeSwitch isDarkTheme={isDarkTheme} setTheme={setTheme} />
@@ -197,9 +187,6 @@ export default function LandingPage() {
               </Button>
             ) : (
               <>
-                <Button variant="ghost" onClick={openAuthModal}>
-                  Login
-                </Button>
                 <Button onClick={onPrimaryCTA}>
                   Get Started <Sparkles className="h-4 w-4" />
                 </Button>
@@ -294,9 +281,9 @@ export default function LandingPage() {
       <section className="relative overflow-hidden [background:linear-gradient(180deg,color-mix(in_oklab,var(--background)_72%,white)_0%,color-mix(in_oklab,var(--secondary)_70%,white)_52%,var(--background)_100%)] dark:[background:linear-gradient(180deg,color-mix(in_oklab,var(--background)_92%,black)_0%,color-mix(in_oklab,var(--secondary)_58%,var(--background))_48%,color-mix(in_oklab,var(--accent)_30%,var(--background))_100%)]">
         <div className="pointer-events-none absolute inset-0 opacity-90">
           <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/18 blur-3xl dark:bg-primary/14" />
-          <div className="absolute top-32 right-[-70px] h-80 w-80 rounded-full bg-chart-2/20 blur-3xl dark:bg-chart-2/12" />
-          <div className="absolute bottom-[-90px] left-[-60px] h-80 w-80 rounded-full bg-chart-3/15 blur-3xl dark:bg-chart-3/10" />
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent dark:via-primary/20" />
+          <div className="absolute top-32 -right-17.5 h-80 w-80 rounded-full bg-chart-2/20 blur-3xl dark:bg-chart-2/12" />
+          <div className="absolute -bottom-22.5 -left-15 h-80 w-80 rounded-full bg-chart-3/15 blur-3xl dark:bg-chart-3/10" />
+          <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/30 to-transparent dark:via-primary/20" />
         </div>
 
         <div className="mx-auto max-w-380 px-4 py-14 md:py-20">
@@ -304,7 +291,7 @@ export default function LandingPage() {
             variants={container}
             initial="hidden"
             animate="show"
-            className="grid items-center gap-10 md:grid-cols-2"
+            className="grid gap-10 md:grid-cols-2"
           >
             <div>
               <motion.div variants={item} className="flex flex-wrap gap-2">
@@ -329,24 +316,6 @@ export default function LandingPage() {
                 applications, and move from shortlist to offer with clarity.
               </motion.p>
 
-              {/* Hero CTAs */}
-              <motion.div variants={item} className="mt-6 flex flex-wrap gap-3">
-                <Button
-                  onClick={() =>
-                    isLoggedIn ? navigate("/dashboard") : openAuthModal()
-                  }
-                >
-                  {isLoggedIn ? "Go to Dashboard" : "Start Shortlisting"}
-                  <Sparkles className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => scrollToSection("features")}
-                >
-                  See how it works
-                </Button>
-              </motion.div>
-
               {/* Quick bullets */}
               <motion.div
                 variants={item}
@@ -366,78 +335,7 @@ export default function LandingPage() {
             </div>
 
             {/* Right Card (Search preview / product preview) */}
-            <motion.div variants={item} className="relative">
-              <div className="rounded-3xl border border-border/70 bg-card/90 p-5 shadow-2xl shadow-primary/10 backdrop-blur">
-                <div className="mb-4 rounded-2xl border border-primary/15 bg-[linear-gradient(135deg,color-mix(in_oklab,var(--primary)_14%,white),color-mix(in_oklab,var(--accent)_85%,white))] p-4 dark:border-primary/20 dark:bg-[linear-gradient(135deg,color-mix(in_oklab,var(--primary)_28%,var(--card)),color-mix(in_oklab,var(--accent)_24%,var(--background)))]">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="font-bold text-foreground">
-                      Student Match Flow
-                    </div>
-                    <span className="rounded-full bg-background/80 px-2.5 py-1 text-[11px] font-semibold text-primary dark:bg-background/60">
-                      Live Preview
-                    </span>
-                  </div>
-                  <div className="mt-2 text-sm text-muted-foreground">
-                    Search, shortlist, and move into applications without losing
-                    context.
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-bold">Quick Search</div>
-                  <Pill>Preview</Pill>
-                </div>
-
-                <div className="mt-4 rounded-2xl border border-border bg-secondary/70 p-3">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Search className="h-4 w-4 text-primary" />
-                    <span>Search “MS Computer Science in Canada”</span>
-                  </div>
-                </div>
-
-                <div className="mt-4 space-y-3">
-                  {[
-                    {
-                      title: "University of Toronto",
-                      meta: "MS CS • IELTS • Sept Intake",
-                      tone: "bg-primary/6 border-primary/15",
-                    },
-                    {
-                      title: "University of Waterloo",
-                      meta: "MS CS • Co-op • Strong ranking",
-                      tone: "bg-chart-2/8 border-chart-2/20",
-                    },
-                    {
-                      title: "McGill University",
-                      meta: "MS CS • Scholarships available",
-                      tone: "bg-chart-3/8 border-chart-3/20",
-                    },
-                  ].map((r) => (
-                    <div
-                      key={r.title}
-                      className={clsx(
-                        "rounded-2xl border p-4 transition hover:-translate-y-0.5 hover:shadow-lg",
-                        r.tone,
-                      )}
-                    >
-                      <div className="text-sm font-bold">{r.title}</div>
-                      <div className="mt-1 text-xs text-muted-foreground">
-                        {r.meta}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-5 rounded-2xl bg-[linear-gradient(135deg,var(--primary),color-mix(in_oklab,var(--primary)_68%,var(--chart-2)))] px-4 py-3 text-primary-foreground shadow-lg shadow-primary/25">
-                  <div className="text-sm font-bold">
-                    Cleaner. Faster. Trackable.
-                  </div>
-                  <div className="mt-1 text-xs text-primary-foreground/80">
-                    Built to match your dashboard workflow.
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <LandingPageRightSection />
           </motion.div>
         </div>
       </section>
