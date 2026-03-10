@@ -5,8 +5,13 @@ export const endpoints = {
     signup: "/signup",
     me: "/profile",
   },
+  search: {
+    results: "/searchUniversity",
+  },
+  pickList: {
+    getPickListValues: "/fetchPicklist",
+  },
   landing: {
-    content: "/landing-page",
     getProgramCount: "/getProgramCount",
     getAllPrograms: "/getProgramCount",
   },
