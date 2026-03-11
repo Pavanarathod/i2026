@@ -22,9 +22,10 @@ function buildFilters(params: URLSearchParams): SearchFilterParams {
   });
 
   const payload = {
-    related_programs: params.get("related_programs") ?? "",
-    related: params.get("related") ?? "",
+    operation: "search_university",
+    related_programs: params.get("related_program") ?? "",
     program: params.get("program") ?? "",
+
     degree_type: params.get("degree_type") ?? "Masters",
     degreeType: params.get("degreeType") ?? params.get("degree_type") ?? "",
     university:

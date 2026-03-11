@@ -18,6 +18,7 @@ import clsx from "clsx";
 import { Menu, Moon, Sparkles, Sun } from "lucide-react";
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import SearchInput from "@/features/search/SearchInput";
 function Button({
   children,
   variant = "primary",
@@ -151,6 +152,10 @@ export default function PublicHeader() {
             </div>
           </Link>
         )}
+
+        <div className="hidden flex-1 px-3 md:block">
+          <SearchInput />
+        </div>
 
         <div className="hidden items-center gap-3 md:flex">
           <ThemeModeSwitch isDarkTheme={isDarkTheme} setTheme={setTheme} />

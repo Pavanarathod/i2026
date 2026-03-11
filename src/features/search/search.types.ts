@@ -308,21 +308,19 @@ export interface University {
 }
 
 export type SearchResultsResponse = ApiResponse<{
-  data: {
-    Programs: Programs[];
-    RelatedPrograms: RelatedPrograms[];
-    data: University[];
-    pagination: {
-      current_page: number;
-      last_page: number;
-      per_page: number;
-      total: number;
-    };
-    state: {
-      state_province: string;
-    }[];
-    university: {
-      university: string;
-    }[];
+  Programs: Programs[];
+  RelatedPrograms: RelatedPrograms[];
+  data: University[];
+  pagination: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
   };
+  state: {
+    state_province: string;
+  }[];
+  university: {
+    university: string;
+  }[];
 }>;
