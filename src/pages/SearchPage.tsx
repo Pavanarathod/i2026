@@ -247,10 +247,10 @@ export default function SearchPage() {
                             type="button"
                             key={`${group.key}-${value}`}
                             onClick={() => handleFilterSelect(group.key, value)}
-                            className={`rounded-full border px-3 py-1.5 text-sm font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer ${
+                            className={`rounded-full border px-2.5 py-1.5 text-xs font-medium tracking-wide transition-all duration-200 cursor-pointer md:px-3 md:text-sm hover:shadow-none hover:translate-y-0 ${
                               isActive
-                                ? "border-primary bg-gradient-to-r from-primary/95 to-primary text-primary-foreground"
-                                : "border-border bg-background text-foreground/90 hover:border-primary/50 hover:text-foreground hover:bg-gradient-to-r hover:from-primary/10 hover:to-transparent"
+                                ? "border-primary/80 bg-primary/15 text-primary md:bg-linear-to-r md:from-primary/95 md:to-primary md:text-primary-foreground"
+                                : "border-border/70 bg-background text-foreground/75 md:bg-background md:text-foreground/90 md:hover:border-primary/50 md:hover:text-foreground md:hover:bg-linear-to-r md:hover:from-primary/10 md:hover:to-transparent"
                             }`}
                           >
                             {value}
@@ -292,8 +292,8 @@ export default function SearchPage() {
                           }
                           className={`rounded-full border px-3 py-1.5 text-sm font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer ${
                             isActive
-                              ? "border-primary bg-gradient-to-r from-primary/95 to-primary text-primary-foreground"
-                              : "border-border bg-background text-foreground/90 hover:border-primary/50 hover:text-foreground hover:bg-gradient-to-r hover:from-primary/10 hover:to-transparent"
+                              ? "border-primary bg-linear-to-r from-primary/95 to-primary text-primary-foreground"
+                              : "border-border bg-background text-foreground/90 hover:border-primary/50 hover:text-foreground hover:bg-linear-to-r hover:from-primary/10 hover:to-transparent"
                           }`}
                         >
                           <span>{title}</span>
@@ -329,8 +329,8 @@ export default function SearchPage() {
                             onClick={() => handleFilterSelect("program", title)}
                             className={`rounded-full border px-3 py-1.5 text-sm font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer ${
                               isActive
-                                ? "border-primary bg-gradient-to-r from-primary/95 to-primary text-primary-foreground"
-                                : "border-border bg-background text-foreground/90 hover:border-primary/50 hover:text-foreground hover:bg-gradient-to-r hover:from-primary/10 hover:to-transparent"
+                                ? "border-primary bg-linear-to-r from-primary/95 to-primary text-primary-foreground"
+                                : "border-border bg-background text-foreground/90 hover:border-primary/50 hover:text-foreground hover:bg-linear-to-r hover:from-primary/10 hover:to-transparent"
                             }`}
                           >
                             <span>{title}</span>
@@ -368,7 +368,7 @@ export default function SearchPage() {
               disabled={!hasActiveFilters}
               className={`inline-flex w-auto items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
                 hasActiveFilters
-                  ? "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground"
+                  ? "bg-linear-to-r from-primary to-primary/85 text-primary-foreground"
                   : "cursor-not-allowed bg-muted text-muted-foreground"
               }`}
             >
@@ -416,7 +416,7 @@ export default function SearchPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
       >
-        <div className="mx-auto w-full max-w-5xl rounded-[1.35rem] border border-primary/30 bg-gradient-to-r from-primary/18 via-background/90 to-primary/8 px-2 py-1.5 shadow-[0_16px_30px_-24px_rgba(59,130,246,0.8)] backdrop-blur-sm">
+        <div className="mx-auto w-full max-w-5xl rounded-[1.35rem] border border-primary/30 bg-linear-to-r from-primary/18 via-background/90 to-primary/8 px-2 py-1.5 shadow-[0_16px_30px_-24px_rgba(59,130,246,0.8)] backdrop-blur-sm">
           {/* <div className="mx-auto mb-1 h-1 w-10 rounded-full bg-primary/40"></div> */}
           <div className="grid grid-cols-5 gap-1.5">
             <button
@@ -494,7 +494,7 @@ export default function SearchPage() {
                         }
                         className={`group flex items-center justify-between rounded-xl border px-4 py-2.5 text-left text-sm font-medium transition-all ${
                           isActive
-                            ? "border-primary bg-gradient-to-r from-primary/95 to-primary text-primary-foreground"
+                            ? "border-primary bg-linear-to-r from-primary/95 to-primary text-primary-foreground"
                             : "border-border bg-background text-foreground/90"
                         }`}
                       >
@@ -553,7 +553,7 @@ export default function SearchPage() {
                         onClick={() => handleFilterSelect("program", title)}
                         className={`group flex items-center justify-between rounded-xl border px-4 py-2.5 text-left text-sm font-medium transition-all ${
                           isActive
-                            ? "border-primary bg-gradient-to-r from-primary/95 to-primary text-primary-foreground"
+                            ? "border-primary bg-linear-to-r from-primary/95 to-primary text-primary-foreground"
                             : "border-border bg-background text-foreground/90"
                         }`}
                       >

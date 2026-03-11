@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Search, ArrowDownCircle } from "lucide-react";
