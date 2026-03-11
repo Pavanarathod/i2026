@@ -5,13 +5,14 @@ import UniversityCard from "@/features/search/UniversityCard";
 import { useGetPickListValues } from "@/features/picklist/picklist.hook";
 import {
   ArrowUpDown,
+  ArrowLeft,
   GraduationCap,
   Layers,
   RotateCcw,
   SlidersHorizontal,
 } from "lucide-react";
 import { useGetSearchResults } from "@/features/search/search.hooks";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
   Sheet,
@@ -19,8 +20,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { motion, type MotionProps } from "framer-motion";
 
 export default function SearchPage() {
+  const navigate = useNavigate();
   const { data, isPending } = useGetSearchResults();
   const {
     pickListData: allSemester,
@@ -64,7 +67,7 @@ export default function SearchPage() {
 
   const specializationValues =
     relatedPrograms?.length! > 0
-      ? [...relatedPrograms]
+      ? [...relatedPrograms!]
           .sort((a, b) => b.Total - a.Total)
           .map((r) => ({ title: r.program, total: r.Total }))
       : [];
@@ -167,14 +170,14 @@ export default function SearchPage() {
 
   const hasActiveFilters = Boolean(
     hasFilterParams("program") ||
-      hasFilterParams("university") ||
-      hasFilterParams("degree_type") ||
-      hasFilterParams("related_program") ||
-      hasFilterParams("country") ||
-      hasFilterParams("semester") ||
-      hasFilterParams("year") ||
-      hasFilterParams("addon") ||
-      hasFilterParams("q"),
+    hasFilterParams("university") ||
+    hasFilterParams("degree_type") ||
+    hasFilterParams("related_program") ||
+    hasFilterParams("country") ||
+    hasFilterParams("semester") ||
+    hasFilterParams("year") ||
+    hasFilterParams("addon") ||
+    hasFilterParams("q"),
   );
 
   const clearAllFilters = () => {
@@ -198,22 +201,39 @@ export default function SearchPage() {
     });
   };
 
+  const blockReveal = (index: number): MotionProps => ({
+    initial: { opacity: 0, y: 10 },
+    animate: { opacity: 1, y: 0 },
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+      delay: index * 0.06,
+    },
+  });
+
   return (
     <main className="min-h-screen w-full bg-background text-foreground pb-24 md:pb-0">
       <PublicHeader />
 
       {/* MAIN Section */}
       <GradientContainer>
-        <div className="md:hidden">
+        <motion.div className="md:hidden" {...blockReveal(0)}>
           <SearchInput />
-        </div>
+        </motion.div>
 
         {/* Main Content */}
         <div className="space-y-3">
-          <section className="rounded-2xl border border-border/70 bg-card/70 p-4 backdrop-blur-md">
+          <motion.div
+            className="rounded-2xl border border-border/70 bg-card/70 p-4 backdrop-blur-md"
+            {...blockReveal(1)}
+          >
             <div className="space-y-3">
-              {filterGroups.map((group) => (
-                <div key={group.key} className="space-y-3">
+              {filterGroups.map((group, index) => (
+                <motion.div
+                  key={group.key}
+                  className="space-y-3"
+                  {...blockReveal(2 + index * 0.2)}
+                >
                   <div
                     className={`overflow-x-auto whitespace-nowrap pb-1 pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [scrollbar-height:none] [&::-webkit-scrollbar]:hidden ${
                       isPending ? "pointer-events-none opacity-80" : ""
@@ -239,16 +259,24 @@ export default function SearchPage() {
                       })}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
             {pickListLoading && (
-              <p className="mt-3 text-xs text-muted-foreground">Loading filters...</p>
+              <motion.p
+                className="mt-3 text-xs text-muted-foreground"
+                {...blockReveal(3)}
+              >
+                Loading filters...
+              </motion.p>
             )}
-          </section>
+          </motion.div>
 
           {/* PROGRAMS AND SPECIFICATIONS */}
-          <section className="hidden rounded-2xl border border-border/70 bg-card/70 p-4 backdrop-blur-md md:block">
+          <motion.div
+            className="hidden rounded-2xl border border-border/70 bg-card/70 p-4 backdrop-blur-md md:block"
+            {...blockReveal(4)}
+          >
             <div className="space-y-3">
               <div className="space-y-3">
                 <div className="overflow-x-auto whitespace-nowrap pb-1 pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [scrollbar-height:none] [&::-webkit-scrollbar]:hidden">
@@ -259,7 +287,9 @@ export default function SearchPage() {
                         <button
                           type="button"
                           key={`related_program-${title}`}
-                          onClick={() => handleFilterSelect("related_program", title)}
+                          onClick={() =>
+                            handleFilterSelect("related_program", title)
+                          }
                           className={`rounded-full border px-3 py-1.5 text-sm font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer ${
                             isActive
                               ? "border-primary bg-gradient-to-r from-primary/95 to-primary text-primary-foreground"
@@ -285,7 +315,9 @@ export default function SearchPage() {
 
               {selectedProgram && (
                 <div className="space-y-3">
-                  <p className="text-sm font-medium text-foreground/80">Specialization</p>
+                  <p className="text-sm font-medium text-foreground/80">
+                    Specialization
+                  </p>
                   <div className="overflow-x-auto whitespace-nowrap pb-1 pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [scrollbar-height:none] [&::-webkit-scrollbar]:hidden">
                     <div className="inline-flex items-center gap-2">
                       {specializationValues?.map(({ title, total }) => {
@@ -319,9 +351,12 @@ export default function SearchPage() {
                 </div>
               )}
             </div>
-          </section>
+          </motion.div>
 
-          <div className="rounded-2xl border border-dashed border-primary/30 bg-card/60 p-3 flex items-center justify-between">
+          <motion.div
+            className="rounded-2xl border border-dashed border-primary/30 bg-card/60 p-3 flex items-center justify-between"
+            {...blockReveal(5)}
+          >
             <span className="font-medium">
               {isUniversitySearchLoading
                 ? "Loading"
@@ -340,65 +375,91 @@ export default function SearchPage() {
               <RotateCcw className="h-3.5 w-3.5" />
               <span>Clear</span>
             </button>
-          </div>
+          </motion.div>
 
           {/* UNIVERSITY CARDs */}
-          <section className="space-y-3">
-            <div className="flex items-center justify-between gap-2">
+          <motion.div className="space-y-3" {...blockReveal(6)}>
+            <motion.div
+              className="flex items-center justify-between gap-2"
+              {...blockReveal(6.2)}
+            >
               {!isUniversitySearchLoading && !university?.length && (
-                <span className="text-sm text-muted-foreground">No universities found</span>
+                <span className="text-sm text-muted-foreground">
+                  No universities found
+                </span>
               )}
-            </div>
+            </motion.div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {isUniversitySearchLoading ? (
                 <div className="col-span-full rounded-2xl border border-border/50 bg-card/60 px-4 py-10 text-center text-sm text-muted-foreground">
                   Loading universities...
                 </div>
               ) : (
-                university?.map((u) => (
-                  <UniversityCard university={u} key={u.universitiesid} />
+                university?.map((u, index) => (
+                  <motion.div
+                    key={u.universitiesid}
+                    {...blockReveal(6.4 + index * 0.04)}
+                  >
+                    <UniversityCard university={u} />
+                  </motion.div>
                 ))
               )}
             </div>
-          </section>
+          </motion.div>
         </div>
       </GradientContainer>
 
       {/* Mobile floating actions */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 px-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur md:hidden">
-        <div className="mx-auto grid max-w-5xl grid-cols-4 gap-2">
-          <button
-            type="button"
-            onClick={() => setActiveDrawer("programs")}
-            className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card/70 px-2 py-2 text-xs font-semibold text-foreground/80 transition hover:bg-card"
-          >
-            <GraduationCap className="h-4 w-4" />
-            <span>Programs</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveDrawer("specializations")}
-            className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card/70 px-2 py-2 text-xs font-semibold text-foreground/80 transition hover:bg-card"
-          >
-            <Layers className="h-4 w-4" />
-            <span>Specialization</span>
-          </button>
-          <button
-            type="button"
-            className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card/70 px-2 py-2 text-xs font-semibold text-foreground/60"
-          >
-            <ArrowUpDown className="h-4 w-4" />
-            <span>Sort</span>
-          </button>
-          <button
-            type="button"
-            className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card/70 px-2 py-2 text-xs font-semibold text-foreground/60"
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            <span>Filter</span>
-          </button>
+      <motion.div
+        className="fixed inset-x-0 bottom-0 z-40 px-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+      >
+        <div className="mx-auto w-full max-w-5xl rounded-[1.35rem] border border-primary/30 bg-gradient-to-r from-primary/18 via-background/90 to-primary/8 px-2 py-1.5 shadow-[0_16px_30px_-24px_rgba(59,130,246,0.8)] backdrop-blur-sm">
+          {/* <div className="mx-auto mb-1 h-1 w-10 rounded-full bg-primary/40"></div> */}
+          <div className="grid grid-cols-5 gap-1.5">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="inline-flex min-h-9 items-center justify-center rounded-lg border border-border/55 bg-background/90 p-1.5 text-foreground/65 transition-all duration-200 hover:border-primary/55 hover:bg-primary/10 hover:text-foreground"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveDrawer("programs")}
+              className="inline-flex min-h-9 items-center justify-center rounded-lg border border-primary/45 bg-primary/12 text-foreground transition-all duration-200 hover:bg-primary/25"
+              aria-label="Open programs"
+            >
+              <GraduationCap className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveDrawer("specializations")}
+              className="inline-flex min-h-9 items-center justify-center rounded-lg border border-accent/45 bg-accent/12 text-foreground transition-all duration-200 hover:bg-accent/25"
+              aria-label="Open specializations"
+            >
+              <Layers className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              className="inline-flex min-h-9 items-center justify-center rounded-lg border border-secondary/35 bg-secondary/8 text-foreground/65 transition-all duration-200 hover:border-secondary/60 hover:bg-secondary/20 hover:text-foreground"
+              aria-label="Sort options"
+            >
+              <ArrowUpDown className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              className="inline-flex min-h-9 items-center justify-center rounded-lg border border-muted/50 bg-muted/12 text-muted-foreground transition-all duration-200 hover:border-primary/35 hover:bg-muted/25 hover:text-foreground"
+              aria-label="Filter options"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </button>
+          </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Mobile drawer for Programs */}
       <Sheet
@@ -415,18 +476,22 @@ export default function SearchPage() {
           </SheetHeader>
 
           <div className="space-y-3">
-            {programValues.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No programs available.</p>
+            {programValues?.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No programs available.
+              </p>
             ) : (
               <div className="max-h-[65vh] overflow-y-auto pr-1">
                 <div className="grid grid-cols-1 gap-2">
-                  {programValues.map(({ title, total }) => {
+                  {programValues?.map(({ title, total }) => {
                     const isActive = isFilterActive("related_program", title);
                     return (
                       <button
                         key={`drawer-program-${title}`}
                         type="button"
-                        onClick={() => handleFilterSelect("related_program", title)}
+                        onClick={() =>
+                          handleFilterSelect("related_program", title)
+                        }
                         className={`group flex items-center justify-between rounded-xl border px-4 py-2.5 text-left text-sm font-medium transition-all ${
                           isActive
                             ? "border-primary bg-gradient-to-r from-primary/95 to-primary text-primary-foreground"

@@ -13,7 +13,7 @@ function GradientContainer({ children }: Props) {
         <div className="absolute -bottom-22.5 -left-15 h-80 w-80 rounded-full bg-chart-3/15 blur-3xl dark:bg-chart-3/10" />
         <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/30 to-transparent dark:via-primary/20" />
       </div>
-      <div className="mx-auto max-w-380 px-4 py-5">{children}</div>
+      <div className="mx-auto max-w-380 px-4 pt-1 space-y-1">{children}</div>
     </section>
   );
 }
