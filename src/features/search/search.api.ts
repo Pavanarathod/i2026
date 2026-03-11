@@ -4,6 +4,7 @@ import { buildFormData } from "@/lib/utils";
 import type { SearchFilterParams, SearchResultsResponse } from "./search.types";
 
 export async function getSearchResults(payload: SearchFilterParams) {
+  console.log("final payload", payload);
   const formData = buildFormData(payload);
 
   const res = await api.post<SearchResultsResponse>(

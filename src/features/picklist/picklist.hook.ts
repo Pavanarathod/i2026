@@ -11,7 +11,7 @@ export function useGetPickListValues(pickList: string) {
   };
   const payload = buildFormData(payloadData);
 
-  const { data: pickListData, isLoading: isGettingPickListValuesLoading } =
+  const { data: pickListData, isPending: isGettingPickListValuesLoading } =
     useQuery({
       queryKey: queryKeys.pickList.values(pickList),
       queryFn: () => getPickListValues(payload),

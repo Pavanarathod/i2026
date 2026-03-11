@@ -7,6 +7,10 @@ import { offersData } from "@/lib/utils";
 
 function buildFilters(params: URLSearchParams): SearchFilterParams {
   const allAddOns = params.getAll("addon");
+  const allUniversities = params.getAll("university");
+
+  console.log("allUniversities", allUniversities);
+
   let addOns: Record<string, boolean> = {};
 
   offersData?.forEach((i) => {
@@ -21,17 +25,18 @@ function buildFilters(params: URLSearchParams): SearchFilterParams {
     related_programs: params.get("related_programs") ?? "",
     related: params.get("related") ?? "",
     program: params.get("program") ?? "",
-    degree_type: params.get("degree_type") ?? params.get("degreeType") ?? "",
+    degree_type: params.get("degree_type") ?? "Masters",
     degreeType: params.get("degreeType") ?? params.get("degree_type") ?? "",
+    university:
+      allUniversities.length > 0 ? JSON.stringify(allUniversities) : "",
     country: params.get("country") ?? "",
     year: params.get("year") ?? "",
     semester: params.get("semester") ?? "",
-    page: Number.isNaN(Number(params.get("page")))
-      ? 1
-      : Number(params.get("page")),
+    page: 1,
     per_page: 50,
     addonConditionType: JSON.stringify(addOns),
   };
+
   return payload;
 }
 
@@ -42,6 +47,5 @@ export function useGetSearchResults() {
   return useQuery({
     queryKey: queryKeys.search.results(searchParams.toString()),
     queryFn: () => getSearchResults(filters),
-    enabled: searchParams.toString().trim().length > 0,
   });
 }
