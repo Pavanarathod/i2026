@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -20,6 +21,7 @@ import { useAuthModalStore } from "@/features/auth/authModalStore";
 import { useAuthStore } from "@/features/auth/store";
 import { useMediaQuery } from "@uidotdev/usehooks";
 import LandingPageRightSection from "@/features/landing/landingPageRightSection";
+import SearchInput from "@/features/search/SearchInput";
 
 const container = {
   hidden: { opacity: 0, y: 12 },
@@ -33,6 +35,38 @@ const container = {
 const item = {
   hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+};
+
+const sectionReveal = {
+  hidden: (dir: number) => ({ opacity: 0, x: dir * 48, scale: 0.98 }),
+  show: () => ({
+    opacity: 1,
+    x: 0,
+    scale: 1,
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
+const headerReveal = {
+  hidden: { opacity: 0, y: -16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
+      staggerChildren: 0.06,
+    },
+  },
+};
+
+const navItemReveal = {
+  hidden: { opacity: 0, y: -8 },
+  show: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, delay: i * 0.07 },
+  }),
 };
 
 function Button({
@@ -125,7 +159,6 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
 
-  // ✅ Update based on your store shape
   const token = useAuthStore((s: { token: string | null }) => s.token);
   const user = useAuthStore((s: { user: unknown | null }) => s.user);
   const isLoggedIn = Boolean(token || user);
@@ -141,11 +174,48 @@ export default function LandingPage() {
   };
 
   const navItems = [
-    { id: "features", label: "Features" },
-    { id: "universities", label: "Universities" },
     { id: "programs", label: "Programs" },
-    { id: "community", label: "Community" },
+    { id: "events", label: "Events" },
+    { id: "services", label: "Services" },
+    { id: "about", label: "About" },
+    { id: "contact", label: "Contact" },
   ] as const;
+
+  const landingSections = React.useMemo(
+    () => [
+      {
+        id: "programs",
+        title: "Programs",
+        body: "Show your flagship pathways, disciplines, and destination options here.",
+        bg: "bg-[radial-gradient(circle_at_top_left,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_44%),radial-gradient(circle_at_bottom_right,color-mix(in_oklab,var(--chart-2)_18%,transparent),transparent_42%),var(--card)]",
+      },
+      {
+        id: "events",
+        title: "Events",
+        body: "Add webinars, fairs, counseling sessions, and application deadlines in this zone.",
+        bg: "bg-[radial-gradient(circle_at_top_right,color-mix(in_oklab,var(--chart-2)_16%,transparent),transparent_42%),radial-gradient(circle_at_bottom_left,color-mix(in_oklab,var(--accent)_16%,transparent),transparent_42%),var(--background)]",
+      },
+      {
+        id: "services",
+        title: "Services",
+        body: "List services like SOP review, visa support, scholarship guidance, and profile building.",
+        bg: "bg-[radial-gradient(circle_at_top,color-mix(in_oklab,var(--chart-3)_14%,transparent),transparent_42%),linear-gradient(140deg,color-mix(in_oklab,var(--background)_75%,white)_0%,color-mix(in_oklab,var(--accent)_20%,var(--background))_100%)]",
+      },
+      {
+        id: "about",
+        title: "About",
+        body: "Introduce your mission, what makes your process dependable, and your success story.",
+        bg: "bg-[radial-gradient(circle_at_left,color-mix(in_oklab,var(--secondary)_20%,transparent),transparent_46%),radial-gradient(circle_at_right,color-mix(in_oklab,var(--primary)_18%,transparent),transparent_46%),var(--background)]",
+      },
+      {
+        id: "contact",
+        title: "Contact",
+        body: "Place your lead form, support email, and response promise in this final section.",
+        bg: "bg-[radial-gradient(circle_at_top,color-mix(in_oklab,var(--accent)_15%,transparent),transparent_48%),radial-gradient(circle_at_bottom,color-mix(in_oklab,var(--chart-1)_18%,transparent),transparent_45%),var(--card)]",
+      },
+    ],
+    [],
+  );
 
   const scrollToSection = (id: (typeof navItems)[number]["id"]) => {
     const el = document.getElementById(id);
@@ -153,61 +223,85 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Top Nav */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-380 items-center justify-between gap-3 px-4 py-3">
-          {isSmallDevice ? (
-            <Link to="/" className="flex items-center gap-3">
-              <div className="flex h-16 w-36">
+    <div className="min-h-screen w-full overflow-x-hidden bg-background text-foreground">
+      <motion.header
+        initial="hidden"
+        animate="show"
+        variants={headerReveal}
+        className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl"
+      >
+        <div className="relative mx-auto flex w-full max-w-380 items-center justify-between gap-3 px-4 py-3 lg:px-8">
+          {/* Left side mobile: logo */}
+          <div className="flex items-center gap-3 md:hidden">
+            <Link to="/" className="flex items-center">
+              <div className="flex h-12 w-20 items-center">
                 <img
                   src={isDarkTheme ? logoDarkMobile : logoWhiteMobile}
                   alt="ISHVI logo"
-                  className="block h-12 w-16"
+                  className="h-full w-full object-contain"
                 />
               </div>
             </Link>
-          ) : (
-            <Link to="/" className="flex items-center gap-3">
-              <div className="flex h-16 w-36">
-                <img
-                  src={isDarkTheme ? logoDark : logoWhite}
-                  alt="ISHVI logo"
-                  className="block h-full w-full object-cover bg-transparent"
-                />
-              </div>
-            </Link>
-          )}
-
-          <div className="hidden items-center gap-3 md:flex">
-            <ThemeModeSwitch isDarkTheme={isDarkTheme} setTheme={setTheme} />
-            {isLoggedIn ? (
-              <Button variant="ghost" onClick={() => navigate("/dashboard")}>
-                Dashboard
-              </Button>
-            ) : (
-              <>
-                <Button onClick={onPrimaryCTA}>
-                  Get Started <Sparkles className="h-4 w-4" />
-                </Button>
-              </>
-            )}
           </div>
 
-          <div className="flex items-center gap-2 md:hidden">
-            {isLoggedIn ? (
-              <Button
-                variant="ghost"
-                className="px-3"
-                onClick={() => navigate("/dashboard")}
+          {/* Desktop logo */}
+          <Link to="/" className="z-10 hidden items-center gap-3 md:flex">
+            <div className="flex h-16 w-36">
+              <img
+                src={isDarkTheme ? logoDark : logoWhite}
+                alt="ISHVI logo"
+                className="block h-full w-full object-cover bg-transparent"
+              />
+            </div>
+          </Link>
+
+          <motion.nav
+            variants={headerReveal}
+            className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 items-center gap-3 px-2 py-2 md:flex md:pointer-events-auto"
+          >
+            {navItems.map((item, index) => (
+              <motion.button
+                type="button"
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                custom={index}
+                variants={navItemReveal}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors duration-300 hover:text-foreground"
               >
-                Dashboard
-              </Button>
-            ) : (
-              <Button variant="ghost" className="px-3" onClick={openAuthModal}>
-                Login
-              </Button>
-            )}
+                <span>{item.label}</span>
+              </motion.button>
+            ))}
+          </motion.nav>
+
+          {/* Desktop right side */}
+          <div className="hidden items-center gap-3 md:flex">
+            <ThemeModeSwitch isDarkTheme={isDarkTheme} setTheme={setTheme} />
+            <motion.button
+              onClick={onPrimaryCTA}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              variants={navItemReveal}
+              custom={4}
+              className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/30 transition hover:brightness-110"
+            >
+              Apply Now
+            </motion.button>
+          </div>
+
+          {/* Mobile right side */}
+          <div className="ml-auto flex items-center gap-2 md:hidden">
+            <motion.button
+              onClick={onPrimaryCTA}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              variants={navItemReveal}
+              custom={4}
+              className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/30 transition hover:brightness-110"
+            >
+              Apply Now
+            </motion.button>
 
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <button
@@ -220,14 +314,14 @@ export default function LandingPage() {
               </button>
 
               <SheetContent
-                side="right"
-                className="w-[86%] border-l border-border bg-background/98 p-0 sm:max-w-sm"
+                side="left"
+                className="w-[86%] border-r border-border bg-background/98 p-0 sm:max-w-sm"
               >
                 <SheetHeader className="border-b border-border/70 px-5 py-5 text-left">
                   <SheetTitle className="text-base">Explore ISHVI</SheetTitle>
                   <SheetDescription>
-                    Browse sections, switch theme, and continue with the best
-                    next action.
+                    Browse sections, switch theme, and continue with your next
+                    action.
                   </SheetDescription>
                 </SheetHeader>
 
@@ -255,18 +349,17 @@ export default function LandingPage() {
 
                   <div className="mt-auto space-y-3 pt-6">
                     <SheetClose asChild>
-                      <Button
-                        variant="secondary"
-                        className="w-full"
-                        onClick={() => scrollToSection("features")}
-                      >
-                        See how it works
+                      <Button className="w-full" onClick={onPrimaryCTA}>
+                        Apply Now <Sparkles className="h-4 w-4" />
                       </Button>
                     </SheetClose>
                     <SheetClose asChild>
-                      <Button className="w-full" onClick={onPrimaryCTA}>
+                      <Button
+                        variant="secondary"
+                        className="w-full"
+                        onClick={onPrimaryCTA}
+                      >
                         {isLoggedIn ? "Go to Dashboard" : "Get Started"}
-                        <Sparkles className="h-4 w-4" />
                       </Button>
                     </SheetClose>
                   </div>
@@ -275,10 +368,9 @@ export default function LandingPage() {
             </Sheet>
           </div>
         </div>
-      </header>
+      </motion.header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden [background:linear-gradient(180deg,color-mix(in_oklab,var(--background)_72%,white)_0%,color-mix(in_oklab,var(--secondary)_70%,white)_52%,var(--background)_100%)] dark:[background:linear-gradient(180deg,color-mix(in_oklab,var(--background)_92%,black)_0%,color-mix(in_oklab,var(--secondary)_58%,var(--background))_48%,color-mix(in_oklab,var(--accent)_30%,var(--background))_100%)]">
+      <section className="relative min-h-[88vh] overflow-hidden [background:linear-gradient(180deg,color-mix(in_oklab,var(--background)_72%,white)_0%,color-mix(in_oklab,var(--secondary)_70%,white)_52%,var(--background)_100%)] dark:[background:linear-gradient(180deg,color-mix(in_oklab,var(--background)_92%,black)_0%,color-mix(in_oklab,var(--secondary)_58%,var(--background))_48%,color-mix(in_oklab,var(--accent)_30%,var(--background))_100%)]">
         <div className="pointer-events-none absolute inset-0 opacity-90">
           <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/18 blur-3xl dark:bg-primary/14" />
           <div className="absolute top-32 -right-17.5 h-80 w-80 rounded-full bg-chart-2/20 blur-3xl dark:bg-chart-2/12" />
@@ -286,175 +378,129 @@ export default function LandingPage() {
           <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/30 to-transparent dark:via-primary/20" />
         </div>
 
-        <div className="mx-auto max-w-380 px-4 py-14 md:py-20">
+        <div className="mx-auto w-full max-w-380 px-4 py-5 md:py-28 lg:px-8">
           <motion.div
             variants={container}
             initial="hidden"
             animate="show"
             className="grid gap-10 md:grid-cols-2"
           >
-            <div>
-              <motion.div variants={item} className="flex flex-wrap gap-2">
-                <Pill>Personalized shortlists</Pill>
-                <Pill>Scholarship discovery</Pill>
-                <Pill>Application support</Pill>
-              </motion.div>
-
+            <div className="text-center md:text-left">
               <motion.h1
                 variants={item}
-                className="mt-5 text-4xl font-black tracking-tight md:text-5xl"
+                className="mt-6 text-5xl font-black tracking-tight md:text-6xl xl:text-7xl"
               >
-                Find the right university, faster with a system built for real
-                students.
+                Study Abroad{" "}
+                <span className="text-primary">with AI-First Guidance</span>
               </motion.h1>
 
               <motion.p
                 variants={item}
-                className="mt-4 max-w-xl text-base text-muted-foreground md:text-lg"
+                className="mt-4 max-w-2xl text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground md:tracking-[0.2em] mx-auto"
               >
-                Search programs and universities, compare requirements, track
-                applications, and move from shortlist to offer with clarity.
+                Smart Counseling by AI, Finalized by Experts
               </motion.p>
 
-              {/* Quick bullets */}
-              <motion.div
+              <motion.p
                 variants={item}
-                className="mt-8 grid gap-2 text-sm text-muted-foreground"
+                className="hidden md:block mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg"
+              >
+                We combine experienced counselors with AI agents that analyze
+                universities, scholarships, profile fit, and deadlines so you
+                can move from dreaming to applying with confidence.
+              </motion.p>
+
+              <motion.div variants={item} className="mt-8 w-full max-w-2xl">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                  Discover your best option
+                </p>
+                <SearchInput />
+              </motion.div>
+
+              <motion.div
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="hidden mt-8 md:grid gap-3 text-sm text-muted-foreground"
               >
                 {[
-                  "Better search + filters (no clutter)",
-                  "Shortlist & compare in one place",
-                  "Clear steps for application journey",
+                  "AI-matched programs based on profile, interests, and goals",
+                  "AI agents for SOP workflows, checklist validation, and reminders",
+                  "Visa and scholarship planning driven by real-time deadlines",
+                  "Human mentor review at every major decision point",
                 ].map((t) => (
-                  <div key={t} className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                  <motion.div
+                    key={t}
+                    variants={item}
+                    className="flex items-center justify-start gap-3 text-left md:text-left text-sm md:items-start md:justify-start"
+                  >
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                     <span>{t}</span>
-                  </div>
+                  </motion.div>
                 ))}
               </motion.div>
             </div>
 
-            {/* Right Card (Search preview / product preview) */}
             <LandingPageRightSection />
           </motion.div>
         </div>
       </section>
 
-      {/* Trust / Stats */}
-      <section className="border-y border-border/70 bg-card/70">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 py-10 md:grid-cols-4">
-          {[
-            { k: "10k+", v: "Student searches" },
-            { k: "2k+", v: "Shortlists created" },
-            { k: "500+", v: "Universities indexed" },
-            { k: "Fast", v: "UI + filtering" },
-          ].map((s) => (
-            <div
-              key={s.v}
-              className="rounded-3xl border border-border bg-background/90 p-4 shadow-sm"
-            >
-              <div className="text-2xl font-black text-primary">{s.k}</div>
-              <div className="text-sm text-muted-foreground">{s.v}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features */}
-      <section id="features" className="mx-auto max-w-7xl px-4 py-14">
-        <div className="flex items-end justify-between gap-6">
-          <div>
-            <h2 className="text-2xl font-black tracking-tight md:text-3xl">
-              Everything important, no noise
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground md:text-base">
-              Your landing should sell the *workflow*, not just visuals.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {[
-            {
-              title: "Smart discovery",
-              desc: "Search programs/universities with real filters, not endless scrolling.",
-            },
-            {
-              title: "Shortlist & compare",
-              desc: "Make decisions faster with structured comparison and saved items.",
-            },
-            {
-              title: "Application pipeline",
-              desc: "Map a student journey from enquiry → applied → offer → admit.",
-            },
-          ].map((f) => (
-            <div
-              key={f.title}
-              className="rounded-3xl border border-border bg-card p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10"
-            >
-              <div className="inline-flex rounded-full bg-accent px-3 py-1 text-[11px] font-bold text-accent-foreground">
-                Workflow
-              </div>
-              <div className="mt-4 text-sm font-extrabold text-foreground">
-                {f.title}
-              </div>
-              <div className="mt-2 text-sm text-muted-foreground">{f.desc}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Plug your existing sections here */}
-      <section id="programs" className="mx-auto max-w-7xl px-4 pb-14">
-        {/* <LandingPagePrograms /> */}
-      </section>
-
-      <section id="universities" className="mx-auto max-w-7xl px-4 pb-14">
-        {/* <LandingPageUniversities /> */}
-      </section>
-
-      <section id="community" className="mx-auto max-w-7xl px-4 pb-14">
-        {/* <LandingPageCommunities /> */}
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-border/70 bg-card/70">
-        <div className="mx-auto max-w-7xl px-4 py-10">
-          <div className="flex flex-col justify-between gap-6 md:flex-row">
-            <div>
-              <div className="text-sm font-black">ISHVI</div>
-              <div className="mt-1 text-sm text-muted-foreground">
-                Study abroad workflow, simplified.
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <a href="#features" className="transition hover:text-primary">
-                Features
-              </a>
-              <a href="#universities" className="transition hover:text-primary">
-                Universities
-              </a>
-              <a href="#programs" className="transition hover:text-primary">
-                Programs
-              </a>
-              {isLoggedIn ? (
-                <Link to="/dashboard" className="transition hover:text-primary">
-                  Dashboard
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={openAuthModal}
-                  className="transition hover:text-primary"
+      <main>
+        {landingSections.map((section, index) => (
+          <motion.section
+            key={section.id}
+            id={section.id}
+            custom={index % 2 === 0 ? -1 : 1}
+            variants={sectionReveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: false, amount: 0.25 }}
+            className={clsx(
+              "min-h-[100vh] border-b border-border/70",
+              section.bg,
+              "relative overflow-hidden",
+            )}
+          >
+            <div className="pointer-events-none absolute inset-0 opacity-65 bg-[radial-gradient(circle_at_top,transparent_84%,rgba(0,0,0,0.04))] dark:bg-[radial-gradient(circle_at_top,transparent_84%,rgba(255,255,255,0.05))]" />
+            <div className="mx-auto flex h-full w-full max-w-380 items-center px-4 py-14 lg:px-8">
+              <div className="max-w-4xl">
+                <motion.h2
+                  variants={sectionReveal}
+                  custom={index % 2 === 0 ? -1 : 1}
+                  className="text-4xl font-black tracking-tight md:text-5xl"
                 >
-                  Login
-                </button>
-              )}
+                  {section.title}
+                </motion.h2>
+                <motion.p
+                  variants={sectionReveal}
+                  custom={index % 2 === 0 ? -1 : 1}
+                  className="mt-5 max-w-3xl text-base leading-relaxed text-muted-foreground md:text-lg"
+                >
+                  {section.body}
+                </motion.p>
+              </div>
             </div>
-          </div>
+          </motion.section>
+        ))}
+      </main>
 
-          <div className="mt-8 text-xs text-muted-foreground">
-            © {new Date().getFullYear()} ISHVI. All rights reserved.
+      <footer className="border-t border-border/70 bg-background/80">
+        <div className="mx-auto flex w-full max-w-[88rem] flex-wrap items-center justify-between gap-3 px-4 py-5 lg:px-8 text-xs text-muted-foreground">
+          <span>© {new Date().getFullYear()} ISHVI. All rights reserved.</span>
+          <div className="flex items-center gap-3">
+            <a href="#" className="transition hover:text-foreground">
+              LinkedIn
+            </a>
+            <a href="#" className="transition hover:text-foreground">
+              Instagram
+            </a>
+            <a href="#" className="transition hover:text-foreground">
+              X
+            </a>
+            <a href="#" className="transition hover:text-foreground">
+              YouTube
+            </a>
           </div>
         </div>
       </footer>

@@ -158,6 +158,12 @@
 }
 
 @layer base {
+  html,
+  body,
+  #root {
+    @apply w-full overflow-x-hidden;
+  }
+
   * {
     @apply border-border outline-ring/50;
   }

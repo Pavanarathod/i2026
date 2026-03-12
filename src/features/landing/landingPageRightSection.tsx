@@ -662,7 +662,7 @@ export default function LandingPageRightSection() {
 
       <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         {selectedPills.length === 0 ? (
-          <span className="text-muted-foreground">No selection yet</span>
+          <></>
         ) : (
           selectedPills.map((pill) => (
             <span
@@ -675,7 +675,7 @@ export default function LandingPageRightSection() {
         )}
       </div>
 
-      <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
+      {/* <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
         <span>
           Step {currentStepIndex + 1} of {STEP_FLOW.length}
         </span>
@@ -686,7 +686,7 @@ export default function LandingPageRightSection() {
         >
           Clear all
         </button>
-      </div>
+      </div> */}
 
       <div className="mb-3 text-sm text-muted-foreground">
         {BREADCRUMBS[currentStepIndex]?.label}
