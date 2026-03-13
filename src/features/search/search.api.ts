@@ -1,7 +1,11 @@
 import { api } from "@/lib/api/client";
 import { endpoints } from "@/lib/api/endpoints";
 import { buildFormData } from "@/lib/utils";
-import type { SearchFilterParams, SearchResultsResponse } from "./search.types";
+import type {
+  SearchFilterParams,
+  SearchResultsResponse,
+  UniversityDetailsResponse,
+} from "./search.types";
 
 export async function getSearchResults(payload: SearchFilterParams) {
   console.log("final payload", payload);
@@ -11,5 +15,16 @@ export async function getSearchResults(payload: SearchFilterParams) {
     endpoints.search.results,
     formData,
   );
+  return res.data;
+}
+
+export async function getUniversityDetails(universityId: string) {
+  const res = await api.post<UniversityDetailsResponse>(
+    endpoints.search.getUniversityDetail,
+    buildFormData({
+      uni_id: universityId,
+    }),
+  );
+
   return res.data;
 }

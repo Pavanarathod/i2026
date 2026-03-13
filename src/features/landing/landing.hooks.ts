@@ -83,3 +83,5 @@ export function useGetProgramCategories(type: string = "Related Programs") {
     isGettingRelatedProgramLoading,
   };
 }
+
+export function useGetGeneralProgram() {}

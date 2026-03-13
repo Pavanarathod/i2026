@@ -7,6 +7,7 @@ export const endpoints = {
   },
   search: {
     results: "/searchUniversity",
+    getUniversityDetail: "/getUniversity",
   },
   pickList: {
     getPickListValues: "/fetchPicklist",
@@ -14,5 +15,8 @@ export const endpoints = {
   landing: {
     getProgramCount: "/getProgramCount",
     getAllPrograms: "/getProgramCount",
+  },
+  events: {
+    getEvent: "/getEventList",
   },
 } as const;

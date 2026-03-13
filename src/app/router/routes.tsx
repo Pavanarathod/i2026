@@ -1,6 +1,7 @@
 import Dashboard from "@/pages/Dashboard";
 import LandingPage from "@/pages/LandingPage";
 import SearchPage from "@/pages/SearchPage";
+import UniversityDetailsPage from "@/pages/UniversityDetailsPage";
 import { createHashRouter } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout";
 import PublicLayout from "../layouts/PublicLayout";
@@ -21,6 +22,10 @@ export const router = createHashRouter([
           {
             path: "/search",
             element: <SearchPage />,
+          },
+          {
+            path: "/university-details/:universitiesid",
+            element: <UniversityDetailsPage />,
           },
         ],
       },

@@ -21,6 +21,11 @@ import { useAuthModalStore } from "@/features/auth/authModalStore";
 import { useAuthStore } from "@/features/auth/store";
 import { useMediaQuery } from "@uidotdev/usehooks";
 import LandingPageRightSection from "@/features/landing/landingPageRightSection";
+import ProgramSection from "@/features/landing/ProgramSection";
+import EventsSection from "@/features/landing/EventsSection";
+import ServiceSection from "@/features/landing/ServiceSection";
+import AboutSection from "@/features/landing/AboutSection";
+import ContactSection from "@/features/landing/ContactSection";
 import SearchInput from "@/features/search/SearchInput";
 
 const container = {
@@ -37,16 +42,6 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
 };
 
-const sectionReveal = {
-  hidden: (dir: number) => ({ opacity: 0, x: dir * 48, scale: 0.98 }),
-  show: () => ({
-    opacity: 1,
-    x: 0,
-    scale: 1,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
-  }),
-};
-
 const headerReveal = {
   hidden: { opacity: 0, y: -16 },
   show: {
@@ -60,14 +55,14 @@ const headerReveal = {
   },
 };
 
-const navItemReveal = {
+const navItemReveal = (i: number) => ({
   hidden: { opacity: 0, y: -8 },
-  show: (i: number) => ({
+  show: {
     opacity: 1,
     y: 0,
     transition: { duration: 0.35, delay: i * 0.07 },
-  }),
-};
+  },
+});
 
 function Button({
   children,
@@ -181,42 +176,6 @@ export default function LandingPage() {
     { id: "contact", label: "Contact" },
   ] as const;
 
-  const landingSections = React.useMemo(
-    () => [
-      {
-        id: "programs",
-        title: "Programs",
-        body: "Show your flagship pathways, disciplines, and destination options here.",
-        bg: "bg-[radial-gradient(circle_at_top_left,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_44%),radial-gradient(circle_at_bottom_right,color-mix(in_oklab,var(--chart-2)_18%,transparent),transparent_42%),var(--card)]",
-      },
-      {
-        id: "events",
-        title: "Events",
-        body: "Add webinars, fairs, counseling sessions, and application deadlines in this zone.",
-        bg: "bg-[radial-gradient(circle_at_top_right,color-mix(in_oklab,var(--chart-2)_16%,transparent),transparent_42%),radial-gradient(circle_at_bottom_left,color-mix(in_oklab,var(--accent)_16%,transparent),transparent_42%),var(--background)]",
-      },
-      {
-        id: "services",
-        title: "Services",
-        body: "List services like SOP review, visa support, scholarship guidance, and profile building.",
-        bg: "bg-[radial-gradient(circle_at_top,color-mix(in_oklab,var(--chart-3)_14%,transparent),transparent_42%),linear-gradient(140deg,color-mix(in_oklab,var(--background)_75%,white)_0%,color-mix(in_oklab,var(--accent)_20%,var(--background))_100%)]",
-      },
-      {
-        id: "about",
-        title: "About",
-        body: "Introduce your mission, what makes your process dependable, and your success story.",
-        bg: "bg-[radial-gradient(circle_at_left,color-mix(in_oklab,var(--secondary)_20%,transparent),transparent_46%),radial-gradient(circle_at_right,color-mix(in_oklab,var(--primary)_18%,transparent),transparent_46%),var(--background)]",
-      },
-      {
-        id: "contact",
-        title: "Contact",
-        body: "Place your lead form, support email, and response promise in this final section.",
-        bg: "bg-[radial-gradient(circle_at_top,color-mix(in_oklab,var(--accent)_15%,transparent),transparent_48%),radial-gradient(circle_at_bottom,color-mix(in_oklab,var(--chart-1)_18%,transparent),transparent_45%),var(--card)]",
-      },
-    ],
-    [],
-  );
-
   const scrollToSection = (id: (typeof navItems)[number]["id"]) => {
     const el = document.getElementById(id);
     el?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -264,8 +223,7 @@ export default function LandingPage() {
                 type="button"
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                custom={index}
-                variants={navItemReveal}
+                variants={navItemReveal(index)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
                 className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors duration-300 hover:text-foreground"
@@ -282,8 +240,7 @@ export default function LandingPage() {
               onClick={onPrimaryCTA}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
-              variants={navItemReveal}
-              custom={4}
+              variants={navItemReveal(4)}
               className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/30 transition hover:brightness-110"
             >
               Apply Now
@@ -296,8 +253,7 @@ export default function LandingPage() {
               onClick={onPrimaryCTA}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
-              variants={navItemReveal}
-              custom={4}
+              variants={navItemReveal(4)}
               className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/30 transition hover:brightness-110"
             >
               Apply Now
@@ -447,46 +403,15 @@ export default function LandingPage() {
       </section>
 
       <main>
-        {landingSections.map((section, index) => (
-          <motion.section
-            key={section.id}
-            id={section.id}
-            custom={index % 2 === 0 ? -1 : 1}
-            variants={sectionReveal}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: false, amount: 0.25 }}
-            className={clsx(
-              "min-h-[100vh] border-b border-border/70",
-              section.bg,
-              "relative overflow-hidden",
-            )}
-          >
-            <div className="pointer-events-none absolute inset-0 opacity-65 bg-[radial-gradient(circle_at_top,transparent_84%,rgba(0,0,0,0.04))] dark:bg-[radial-gradient(circle_at_top,transparent_84%,rgba(255,255,255,0.05))]" />
-            <div className="mx-auto flex h-full w-full max-w-380 items-center px-4 py-14 lg:px-8">
-              <div className="max-w-4xl">
-                <motion.h2
-                  variants={sectionReveal}
-                  custom={index % 2 === 0 ? -1 : 1}
-                  className="text-4xl font-black tracking-tight md:text-5xl"
-                >
-                  {section.title}
-                </motion.h2>
-                <motion.p
-                  variants={sectionReveal}
-                  custom={index % 2 === 0 ? -1 : 1}
-                  className="mt-5 max-w-3xl text-base leading-relaxed text-muted-foreground md:text-lg"
-                >
-                  {section.body}
-                </motion.p>
-              </div>
-            </div>
-          </motion.section>
-        ))}
+        <ProgramSection index={0} />
+        <EventsSection index={1} />
+        <ServiceSection index={2} />
+        <AboutSection index={3} />
+        <ContactSection index={4} />
       </main>
 
       <footer className="border-t border-border/70 bg-background/80">
-        <div className="mx-auto flex w-full max-w-[88rem] flex-wrap items-center justify-between gap-3 px-4 py-5 lg:px-8 text-xs text-muted-foreground">
+        <div className="mx-auto flex w-full max-w-352 flex-wrap items-center justify-between gap-3 px-4 py-5 lg:px-8 text-xs text-muted-foreground">
           <span>© {new Date().getFullYear()} ISHVI. All rights reserved.</span>
           <div className="flex items-center gap-3">
             <a href="#" className="transition hover:text-foreground">

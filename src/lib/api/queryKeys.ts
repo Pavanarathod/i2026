@@ -4,6 +4,8 @@ export const queryKeys = {
   },
   search: {
     results: (query: string) => ["search", "results", query] as const,
+    university: (universityId: string) =>
+      ["search", "university", universityId] as const,
   },
   pickList: {
     values: (pickList: string) => ["pickList", "values", pickList] as const,

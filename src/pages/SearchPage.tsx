@@ -73,6 +73,12 @@ export default function SearchPage() {
       : [];
 
   const totalUniversities = searchResults?.pagination?.total ?? 0;
+  const skeletonCards = Array.from({ length: 8 }, (_, index) => index);
+  const filterSkeletonMap: Record<string, number> = {
+    degree_type: 5,
+    country: 7,
+    semester: 4,
+  };
 
   const handleFilterSelect = (param: string, value: string) => {
     setSearchParams((prev) => {
@@ -240,23 +246,40 @@ export default function SearchPage() {
                     }`}
                   >
                     <div className="inline-flex items-center gap-2">
-                      {group.values.map((value) => {
-                        const isActive = isFilterActive(group.key, value);
-                        return (
-                          <button
-                            type="button"
-                            key={`${group.key}-${value}`}
-                            onClick={() => handleFilterSelect(group.key, value)}
-                            className={`rounded-full border px-2.5 py-1.5 text-xs font-medium tracking-wide transition-all duration-200 cursor-pointer md:px-3 md:text-sm hover:shadow-none hover:translate-y-0 ${
-                              isActive
-                                ? "border-primary/80 bg-primary/15 text-primary md:bg-linear-to-r md:from-primary/95 md:to-primary md:text-primary-foreground"
-                                : "border-border/70 bg-background text-foreground/75 md:bg-background md:text-foreground/90 md:hover:border-primary/50 md:hover:text-foreground md:hover:bg-linear-to-r md:hover:from-primary/10 md:hover:to-transparent"
-                            }`}
-                          >
-                            {value}
-                          </button>
-                        );
-                      })}
+                      {pickListLoading
+                        ? Array.from(
+                            {
+                              length:
+                                filterSkeletonMap[group.key] ??
+                                group.values.length ??
+                                4,
+                            },
+                            (_, index) => index,
+                          ).map((index) => (
+                            <span
+                              key={`${group.key}-skeleton-${index}`}
+                              className="h-8 w-20 animate-pulse rounded-full border border-border/60 bg-muted/70"
+                            />
+                          ))
+                        : group.values.map((value) => {
+                            const isActive = isFilterActive(group.key, value);
+                            return (
+                              <button
+                                type="button"
+                                key={`${group.key}-${value}`}
+                                onClick={() =>
+                                  handleFilterSelect(group.key, value)
+                                }
+                                className={`rounded-full border px-2.5 py-1.5 text-xs font-medium tracking-wide transition-all duration-200 cursor-pointer md:px-3 md:text-sm hover:shadow-none hover:translate-y-0 ${
+                                  isActive
+                                    ? "border-primary/80 bg-primary/15 text-primary md:bg-linear-to-r md:from-primary/95 md:to-primary md:text-primary-foreground"
+                                    : "border-border/70 bg-background text-foreground/75 md:bg-background md:text-foreground/90 md:hover:border-primary/50 md:hover:text-foreground md:hover:bg-linear-to-r md:hover:from-primary/10 md:hover:to-transparent"
+                                }`}
+                              >
+                                {value}
+                              </button>
+                            );
+                          })}
                     </div>
                   </div>
                 </motion.div>
@@ -267,7 +290,7 @@ export default function SearchPage() {
                 className="mt-3 text-xs text-muted-foreground"
                 {...blockReveal(3)}
               >
-                Loading filters...
+                Preparing filter options...
               </motion.p>
             )}
           </motion.div>
@@ -281,34 +304,43 @@ export default function SearchPage() {
               <div className="space-y-3">
                 <div className="overflow-x-auto whitespace-nowrap pb-1 pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [scrollbar-height:none] [&::-webkit-scrollbar]:hidden">
                   <div className="inline-flex items-center gap-2">
-                    {programValues?.map(({ title, total }) => {
-                      const isActive = isFilterActive("related_program", title);
-                      return (
-                        <button
-                          type="button"
-                          key={`related_program-${title}`}
-                          onClick={() =>
-                            handleFilterSelect("related_program", title)
-                          }
-                          className={`rounded-full border px-3 py-1.5 text-sm font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer ${
-                            isActive
-                              ? "border-primary bg-linear-to-r from-primary/95 to-primary text-primary-foreground"
-                              : "border-border bg-background text-foreground/90 hover:border-primary/50 hover:text-foreground hover:bg-linear-to-r hover:from-primary/10 hover:to-transparent"
-                          }`}
-                        >
-                          <span>{title}</span>
-                          <span
-                            className={`ml-2 rounded-full px-2 py-0.5 text-[11px] ${
-                              isActive
-                                ? "bg-white/20 text-primary-foreground"
-                                : "bg-primary/10 text-primary"
-                            }`}
-                          >
-                            {total}
-                          </span>
-                        </button>
-                      );
-                    })}
+                    {isUniversitySearchLoading
+                      ? Array.from({ length: 6 }, (_, index) => index).map(
+                          (index) => (
+                            <span
+                              key={`related-program-skeleton-${index}`}
+                              className="h-9 w-32 animate-pulse rounded-full border border-border/60 bg-muted/70"
+                            />
+                          ),
+                        )
+                      : programValues?.map(({ title, total }) => {
+                          const isActive = isFilterActive("related_program", title);
+                          return (
+                            <button
+                              type="button"
+                              key={`related_program-${title}`}
+                              onClick={() =>
+                                handleFilterSelect("related_program", title)
+                              }
+                              className={`rounded-full border px-3 py-1.5 text-sm font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer ${
+                                isActive
+                                  ? "border-primary bg-linear-to-r from-primary/95 to-primary text-primary-foreground"
+                                  : "border-border bg-background text-foreground/90 hover:border-primary/50 hover:text-foreground hover:bg-linear-to-r hover:from-primary/10 hover:to-transparent"
+                              }`}
+                            >
+                              <span>{title}</span>
+                              <span
+                                className={`ml-2 rounded-full px-2 py-0.5 text-[11px] ${
+                                  isActive
+                                    ? "bg-white/20 text-primary-foreground"
+                                    : "bg-primary/10 text-primary"
+                                }`}
+                              >
+                                {total}
+                              </span>
+                            </button>
+                          );
+                        })}
                   </div>
                 </div>
               </div>
@@ -358,9 +390,11 @@ export default function SearchPage() {
             {...blockReveal(5)}
           >
             <span className="font-medium">
-              {isUniversitySearchLoading
-                ? "Loading"
-                : `${totalUniversities} Universities`}
+              {isUniversitySearchLoading ? (
+                <span className="inline-flex h-5 w-44 animate-pulse rounded bg-muted/70" />
+              ) : (
+                `${totalUniversities} Universities`
+              )}
             </span>
             <button
               type="button"
@@ -391,9 +425,43 @@ export default function SearchPage() {
             </motion.div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {isUniversitySearchLoading ? (
-                <div className="col-span-full rounded-2xl border border-border/50 bg-card/60 px-4 py-10 text-center text-sm text-muted-foreground">
-                  Loading universities...
-                </div>
+                <>
+                  {skeletonCards.map((index) => (
+                    <motion.div
+                      key={`university-skeleton-${index}`}
+                      className="rounded-[28px] border border-border/60 bg-card/60 p-1 shadow-[0_16px_40px_-28px_rgba(0,0,0,0.35)]"
+                    >
+                      <div className="pointer-events-none relative overflow-hidden rounded-[24px]">
+                        <div className="h-52 w-full animate-pulse bg-muted/70" />
+                        <div className="absolute left-3 top-3 flex gap-2">
+                          <span className="h-6 w-20 rounded-full bg-background/55" />
+                          <span className="h-6 w-16 rounded-full bg-background/55" />
+                        </div>
+                      </div>
+                      <div className="space-y-3 p-3">
+                        <div className="space-y-2">
+                          <span className="h-3 w-24 rounded bg-muted/70" />
+                          <span className="block h-5 w-5/6 rounded bg-muted/80" />
+                          <span className="block h-4 w-4/6 rounded bg-muted/60" />
+                        </div>
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          {Array.from({ length: 4 }, (_, cellIndex) => cellIndex).map(
+                            (cellIndex) => (
+                              <div
+                                key={`university-card-skeleton-stat-${cellIndex}`}
+                                className="rounded-xl border border-border/40 bg-background/55 p-3"
+                              >
+                                <span className="mb-2 block h-3 w-16 rounded bg-muted/70" />
+                                <span className="block h-4 w-24 rounded bg-muted/80" />
+                              </div>
+                            ),
+                          )}
+                        </div>
+                        <div className="h-9 rounded-xl border border-border/40 bg-background/55" />
+                      </div>
+                    </motion.div>
+                  ))}
+                </>
               ) : (
                 university?.map((u, index) => (
                   <motion.div

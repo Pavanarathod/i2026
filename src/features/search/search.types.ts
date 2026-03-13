@@ -7,6 +7,7 @@ export type SearchFilterParams = {
   specialization?: string;
   related_programs?: string;
   related?: string;
+  universitiesid?: string;
   degreeType?: string;
   degree_type?: string;
   country?: string;
@@ -323,4 +324,8 @@ export type SearchResultsResponse = ApiResponse<{
   university: {
     university: string;
   }[];
+}>;
+
+export type UniversityDetailsResponse = ApiResponse<{
+  data: University;
 }>;
